@@ -3,19 +3,18 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './pages/Login';
 import Register from './pages/Register';
 import CustomerDashboard from './pages/CustomerDashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import AgentDashboard from './pages/AgentDashboard';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* लॉगिन आणि रजिस्ट्रेशन पेज */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        
-        {/* डॅशबोर्ड पेज */}
         <Route path="/customer-dashboard" element={<CustomerDashboard />} />
-        
-        {/* जर कोणतीही लिंक सापडली नाही तर युजरला लॉगिन पेजवर पाठवा */}
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/agent-dashboard" element={<AgentDashboard />} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>
