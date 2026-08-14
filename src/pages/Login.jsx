@@ -24,8 +24,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-900 via-purple-800 to-pink-600 px-4">
-      <div className="max-w-md w-full bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl shadow-2xl text-white">
+    <div className="min-h-screen flex items-center justify-center bg-white p-4">
+  <div className="max-w-md w-full bg-slate-800 border border-slate-700 rounded-2xl shadow-xl p-8 text-white">
         
         <div className="text-center mb-8">
           <h2 className="text-4xl font-extrabold tracking-wide bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
