@@ -1,113 +1,131 @@
-import React, { useEffect, useState } from 'react';
-import API from '../services/api';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function CustomerDashboard() {
-  const [tickets, setTickets] = useState([]);
   const [subject, setSubject] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const navigate = useNavigate();
-
-  // सर्व तिकिटे सर्व्हरवरून फेच करणे
-  const fetchTickets = async () => {
-    try {
-      const { data } = await API.get('/tickets');
-      setTickets(data);
-    } catch (err) {
-      console.error('Error fetching tickets:', err);
-    }
-  };
+  const [category, setCategory] = useState('Technical');
+  const [priority, setPriority] = useState('Medium');
+  const [tickets, setTickets] = useState([]);
 
   useEffect(() => {
     fetchTickets();
   }, []);
 
-  // नवीन तिकीट तयार करणे
-  const createTicket = async (e) => {
-    e.preventDefault();
+  const fetchTickets = async () => {
     try {
-      await API.post('/tickets', { 
-        subject, 
-        description, 
-        category: category || '650f1a2b3c4d5e6f7a8b9c0d' // डिफिकल्ट कॅटेगरी आयडी किंवा सेलेक्टेड व्हॅल्यू
+      const token = localStorage.getItem('token');
+      const res = await axios.get('http://localhost:5000/api/tickets', {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setSubject('');
-      setDescription('');
-      setCategory('');
-      fetchTickets(); // लिस्ट रिफ्रेश करणे
+      setTickets(res.data);
     } catch (err) {
-      console.error('Error creating ticket:', err);
+      console.error(err);
     }
   };
 
-  // लॉग आउट हँडलर
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:5000/api/tickets', 
+        { subject, description, category, priority },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setSubject('');
+      setDescription('');
+      setCategory('Technical');
+      setPriority('Medium');
+      fetchTickets();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Customer Dashboard</h1>
-        <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-          Logout
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-2xl font-bold mb-6">Customer Dashboard</h1>
+      
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow mb-8 space-y-4">
+        <h2 className="text-lg font-semibold">Create New Support Ticket</h2>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Subject</label>
+          <input 
+            type="text" 
+            value={subject} 
+            onChange={(e) => setSubject(e.target.value)} 
+            placeholder="Enter ticket subject" 
+            className="w-full mt-1 p-2 border rounded"
+            required 
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Category</label>
+          <select 
+            value={category} 
+            onChange={(e) => setCategory(e.target.value)} 
+            className="w-full mt-1 p-2 border rounded"
+          >
+            <option value="Technical">Technical</option>
+            <option value="Billing">Billing</option>
+            <option value="General">General</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Priority</label>
+          <select 
+            value={priority} 
+            onChange={(e) => setPriority(e.target.value)} 
+            className="w-full mt-1 p-2 border rounded"
+          >
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Critical">Critical</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <textarea 
+            value={description} 
+            onChange={(e) => setDescription(e.target.value)} 
+            placeholder="Describe your issue in detail" 
+            className="w-full mt-1 p-2 border rounded"
+            required 
+          />
+        </div>
+
+        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">
+          Submit Ticket
         </button>
-      </div>
+      </form>
 
-      <div className="max-w-4xl mx-auto">
-        {/* नवीन तिकीट तयार करण्याचा फॉर्म */}
-        <form onSubmit={createTicket} className="bg-white p-6 rounded-lg shadow-md mb-8">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">Create New Support Ticket</h2>
-          
-          <div className="mb-4">
-            <label className="block text-gray-600 text-sm font-bold mb-2">Subject</label>
-            <input 
-              type="text" 
-              placeholder="Enter ticket subject" 
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" 
-              value={subject} 
-              onChange={(e) => setSubject(e.target.value)} 
-              required 
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-600 text-sm font-bold mb-2">Description</label>
-            <textarea 
-              placeholder="Describe your issue in detail" 
-              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" 
-              value={description} 
-              onChange={(e) => setDescription(e.target.value)} 
-              required 
-            />
-          </div>
-
-          <button type="submit" className="w-full bg-green-600 text-white p-2 rounded font-semibold hover:bg-green-700 transition">
-            Submit Ticket
-          </button>
-        </form>
-
-        {/* तिकिटांची यादी दाखवणे */}
-        <h2 className="text-xl font-semibold mb-4 text-gray-700">My Tickets History</h2>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          {tickets.length === 0 ? (
-            <p className="text-gray-500 text-center">No tickets found.</p>
-          ) : (
-            tickets.map((t) => (
-              <div key={t._id} className="border-b py-4 flex justify-between items-center last:border-none">
-                <div>
-                  <p className="font-bold text-blue-600">{t.ticketId}: {t.subject}</p>
-                  <p className="text-sm text-gray-600 mt-1">{t.description}</p>
-                </div>
-                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
+      <h2 className="text-xl font-bold mb-4">My Tickets History</h2>
+      <div className="space-y-4">
+        {tickets.length === 0 ? (
+          <p className="text-gray-500 bg-white p-4 rounded shadow">No tickets found.</p>
+        ) : (
+          tickets.map((t) => (
+            <div key={t._id} className="bg-white p-4 rounded shadow space-y-1">
+              <div className="flex justify-between items-center">
+                <span className="font-semibold text-blue-600">{t.subject}</span>
+                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
                   {t.status}
                 </span>
               </div>
-            ))
-          )}
-        </div>
+              <p className="text-sm text-gray-600">{t.description}</p>
+              <div className="text-xs text-gray-400 space-x-2 pt-2">
+                <span>Category: {t.category}</span>
+                <span>•</span>
+                <span>Priority: {t.priority}</span>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
