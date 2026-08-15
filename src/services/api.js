@@ -2,8 +2,8 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 // Render cha backend URL
-const API = axios.create({ 
-  baseURL: 'https://helpdesk-backend-wjne.onrender.com/api',
+const API = axios.create({
+  baseURL: `${import.meta.env.VITE_API_URL}/api`,
   timeout: 10000
 });
 
