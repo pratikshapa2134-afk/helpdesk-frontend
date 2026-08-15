@@ -1,30 +1,35 @@
-import axios from 'axios';
-import toast from 'react-hot-toast';
+import axios from "axios";
+import toast from "react-hot-toast";
 
-// Render cha backend URL
 const API = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL}/api`,
-  timeout: 10000
+  baseURL: import.meta.env.VITE_API_URL,
+  timeout: 10000,
 });
 
-// Token auto add karayala
+// Token automatically add करेल
 API.interceptors.request.use((req) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
+
   if (token) {
     req.headers.Authorization = `Bearer ${token}`;
   }
+
   return req;
 });
 
-// Error handle karayala
+// Error handling
 API.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location = '/login';
+      localStorage.removeItem("token");
+      window.location.href = "/login";
     }
-    toast.error(error.response?.data?.message || 'Network Error');
+
+    toast.error(
+      error.response?.data?.message || "Network Error"
+    );
+
     return Promise.reject(error);
   }
 );
