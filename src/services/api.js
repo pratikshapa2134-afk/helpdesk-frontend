@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://helpdesk-backend-wjne.onrender.com/api', // तुमच्या डिप्लॉय केलेल्या बॅकएंडची लिंक
+  // Your deployed Render backend URL
+  baseURL: 'https://helpdesk-backend-wjne.onrender.com/api', 
 });
 
-// रिक्वेस्ट पाठवण्यापूर्वी लोकल स्टोरेजमधील टोकन हेडर्समध्ये जोडणे
+// Attach the token from local storage to request headers before sending
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem('token');
   if (token) {
